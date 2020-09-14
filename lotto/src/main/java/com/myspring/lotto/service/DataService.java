@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.myspring.lotto.bean.DataVO;
+import com.myspring.lotto.bean.StoreVO;
 
 public interface DataService {
 		public List<Map<String,String>> showAllData() throws Exception;
@@ -18,4 +19,6 @@ public interface DataService {
 		public List<Map<String,String>> showRoundRankData (int drawRound) throws Exception;
 		public List<Map<String,String>> showDateRankData (String drawDate) throws Exception;
 		public List<Map<String,String>> showRankData() throws Exception;
+		public List<Map<String,String>> showStoreRankData() throws Exception;
+		
 }

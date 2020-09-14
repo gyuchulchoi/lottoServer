@@ -34,6 +34,10 @@ public class DataDAOImpl implements DataDAO {
 		return sqlSession.selectList(namespace+".showDateRoundData",dataVO);
 	}
 	@Override
+	public List<Map<String,String>> showStoreRankData(StoreVO storeVO) throws Exception {
+		return sqlSession.selectList(namespace + ".showStoreRankData", storeVO);
+	}
+	@Override
 	public List<Map<String,String>> showRoundData(DataVO dataVO) throws Exception {
 		return sqlSession.selectList(namespace+".showRoundData", dataVO);
 	}

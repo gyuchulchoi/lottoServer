@@ -56,6 +56,8 @@
 		select * from ranks;
 	</select>
 	
+	
+	
 	<select id="showDateRankData" parameterType="com.myspring.lotto.bean.RankVO" resultMap = "RankData">
 		select * from ranks where drawDate like CONCAT(#{drawDate},'%');
 	</select>

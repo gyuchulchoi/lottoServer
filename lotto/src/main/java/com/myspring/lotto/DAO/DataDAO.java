@@ -21,6 +21,7 @@ public interface DataDAO {
 	public List<Map<String,String>> showRoundRankData(RankVO rankVO) throws Exception;
 	public List<Map<String,String>> showDateRankData(RankVO rankVO) throws Exception;
 	public List<Map<String,String>> showRankData(RankVO rankVO) throws Exception;
+	public List<Map<String,String>> showStoreRankData(StoreVO storeVO) throws Exception;
 	public void insertStoreData(StoreVO testBean);
 	public void insertData(DataVO testBean);
 	public void updateWinningAmount(DataVO testBean);

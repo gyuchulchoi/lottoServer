@@ -29,7 +29,12 @@ public class DataServiceImpl implements DataService {
 	private DataVO dataVO;
 	private StoreVO storeVO;
 	private RankVO rankVO;
-	
+	@Override
+	public List<Map<String,String>> showStoreRankData() throws Exception {
+		//storeVO = new StoreVO();
+		return dao.showStoreRankData(storeVO);
+		
+	}
 	@Override
 	public List<Map<String,String>> showDateRoundData(String drawDate, int drawRound) throws Exception {
 		dataVO = new DataVO();

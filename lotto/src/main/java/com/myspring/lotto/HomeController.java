@@ -20,7 +20,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
+import java.io.*;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -60,9 +60,9 @@ public class HomeController {
 			URL url = new URL(apiUrl);
 			return (HttpURLConnection) url.openConnection();
 		} catch(MalformedURLException e) {
-			throw new RuntimeException("API URLÀÌ Àß¸øµÇ¾ú½À´Ï´Ù. : " + apiUrl, e);
+			throw new RuntimeException("API URLì´ ì˜ëª»ë˜ì—ˆìŠµë‹ˆë‹¤. : " + apiUrl, e);
 		} catch(IOException e) {
-			throw new RuntimeException("¿¬°áÀÌ ½ÇÆĞÇß½À´Ï´Ù. : " + apiUrl, e);
+			throw new RuntimeException("ì—°ê²°ì´ ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤. : " + apiUrl, e);
 		}
 	}
 	private static String readBody(InputStream body) {
@@ -79,7 +79,7 @@ public class HomeController {
 			return responseBody.toString();
 		} 
 		catch(IOException e) {
-				throw new RuntimeException("API ÀÀ´äÀ» ÀĞ´Âµ¥ ½ÇÆĞÇß½À´Ï´Ù.", e);
+				throw new RuntimeException("API ì‘ë‹µì„ ì½ëŠ”ë° ì‹¤íŒ¨í–ˆìŠµë‹ˆë‹¤.", e);
 		}
 		}
 	private static String get(String apiUrl, Map<String, String> requestHeaders) {
@@ -91,15 +91,15 @@ public class HomeController {
 					}
 
 					int responseCode = con.getResponseCode();
-					if (responseCode == HttpURLConnection.HTTP_OK) { // Á¤»ó È£Ãâ
+					if (responseCode == HttpURLConnection.HTTP_OK) { // ì •ìƒ í˜¸ì¶œ
 							return readBody(con.getInputStream());
 					} 
-					else { // ¿¡·¯ ¹ß»ı
+					else { // ì—ëŸ¬ ë°œìƒ
 							return readBody(con.getErrorStream());
 					}
 				} 
 			catch (IOException e) {
-					throw new RuntimeException("API ¿äÃ»°ú ÀÀ´ä ½ÇÆĞ", e);
+					throw new RuntimeException("API ìš”ì²­ê³¼ ì‘ë‹µ ì‹¤íŒ¨", e);
 			} 
 			finally {
 					con.disconnect();
@@ -122,7 +122,7 @@ public class HomeController {
 			for(Map.Entry<String, String> entry : map.entrySet()) {
 				String key = entry.getKey();
 				Object value = entry.getValue();
-				System.out.println("Å° "+key);
+				System.out.println("í‚¤ "+key);
 			
 				if(key.equals("winningNum1"))
 					continue;
@@ -226,8 +226,55 @@ public class HomeController {
 			return jsonArray.toString();
 		}
 	}
+	
 	@ResponseBody
-	 @RequestMapping(value = "/ranks", method = RequestMethod.GET, produces="text/plain;charset=UTF-8")
+	 @RequestMapping(value = "/lottos/randomNum", method = RequestMethod.GET, produces="text/plain;charset=UTF-8")
+	 public String randomNum(HttpServletRequest request) throws Exception {
+		try{
+	        //íŒŒì¼ ê°ì²´ ìƒì„±
+	        File file = new File("C:/Users/82106/randomNumber.txt");
+	         //ì…ë ¥ ìŠ¤íŠ¸ë¦¼ ìƒì„±
+	         FileReader file_reader = new FileReader(file);
+	         int cur = 0;
+	         String s ="";
+	         while((cur = file_reader.read()) != -1){
+	            System.out.print((char)cur);
+	            s += (char)cur;
+	         }
+	         StringBuilder builder = new StringBuilder(s);
+	         //StringBuilder builder = new StringBuilder(s);
+	         //String replaceStr = new StringBuilder(builder.toString().replace("\"", "")).toString();
+	         //String str = new StringBuilder(replaceStr).insert(2, "\"").insert(17, "\"").insert(47, "\"").insert(96, "\"").toString();
+	         for(int i=0; i<s.length(); i++) {
+	        	 if(i!=0 && s.charAt(i) == '[') {
+	        		 builder.setCharAt(i-1, ' ');
+	        	 }
+	        	 else if(i!=s.length()-1 && s.charAt(i) == ']')
+	        	 {
+	        		 builder.setCharAt(i+1, ' ');
+	        	 }
+	        	 
+	         }
+	         
+	         s = builder.toString().replaceAll(" ", "");
+	         
+	         //System.out.println(str);
+	         //2, 17 49
+	         //96
+	         
+	         file_reader.close();
+	         return "["+s.trim()+ "]";
+	        }catch (FileNotFoundException e) {
+	            e.getStackTrace();
+	        }catch(IOException e){
+	            e.getStackTrace();
+	        }
+		//â€ª
+			return "";
+	}
+	
+	@ResponseBody
+	 @RequestMapping(value = "lottos/ranks", method = RequestMethod.GET, produces="text/plain;charset=UTF-8")
 	 public String showRankData(HttpServletRequest request) throws Exception {
 		String drawDate = request.getParameter("drawDate");
 		String drawRound = request.getParameter("drawRound");
@@ -259,6 +306,18 @@ public class HomeController {
 			if(jsonArray.size() == 1)
 				return jsonArray.get(0).toString();
 			return jsonArray.toString();
+	}
+	
+	@ResponseBody
+	 @RequestMapping(value = "/shopsRank", method = RequestMethod.GET, produces="text/plain;charset=UTF-8")
+	 public String storeRank(HttpServletRequest request) throws Exception {
+		JSONArray jsonArray = new JSONArray();
+		List<Map<String,String>> dataVO;
+		dataVO = service.showStoreRankData();
+		for(Map<String, String> map : dataVO) {
+			jsonArray.add(convertToJson(map));		
+		}
+		return jsonArray.toString();
 	}
 	
 	@ResponseBody
@@ -327,8 +386,8 @@ public class HomeController {
 			
 			JSONObject jsonObj = (JSONObject)jsonParse.parse(responseBody);
 		
-			String drawDate = jsonObj.get("drwNoDate").toString().replace("-", ""); //ÃßÃ·ÀÏ
-			int drawRound = Integer.parseInt(jsonObj.get("drwNo").toString()); //È¸Â÷
+			String drawDate = jsonObj.get("drwNoDate").toString().replace("-", ""); //ì¶”ì²¨ì¼
+			int drawRound = Integer.parseInt(jsonObj.get("drwNo").toString()); //íšŒì°¨
 			long winningAmount = Long.parseLong(jsonObj.get("totSellamnt").toString());
 			int winningNum1 = Integer.parseInt(jsonObj.get("drwtNo1").toString()); // 1
 			int winningNum2 = Integer.parseInt(jsonObj.get("drwtNo2").toString()); // 2
@@ -336,8 +395,8 @@ public class HomeController {
 			int winningNum4 = Integer.parseInt(jsonObj.get("drwtNo4").toString()); // 4
 			int winningNum5 = Integer.parseInt(jsonObj.get("drwtNo5").toString()); // 5
 			int winningNum6 = Integer.parseInt(jsonObj.get("drwtNo6").toString()); // 6
-			int bonusNum = Integer.parseInt(jsonObj.get("bnusNo").toString()); // º¸³Ê½º
-			long winnerPrice = Long.parseLong(jsonObj.get("firstWinamnt").toString()); // 1µî ´çÃ·±İ
+			int bonusNum = Integer.parseInt(jsonObj.get("bnusNo").toString()); // ë³´ë„ˆìŠ¤
+			long winnerPrice = Long.parseLong(jsonObj.get("firstWinamnt").toString()); // 1ë“± ë‹¹ì²¨ê¸ˆ
 			int winnerCount = Integer.parseInt(jsonObj.get("firstPrzwnerCo").toString());
 			
 			DataVO dataVO = new DataVO();
@@ -407,13 +466,13 @@ public class HomeController {
 			Elements strong = el.select("h4");
 			
 			Elements el2 = el.select("p").eq(0);
-			String drawDate = el2.text().replace("(","").replace(")","").replace("³â", "").replace("¿ù", "").replace("ÀÏ", "").replace("ÃßÃ·", "").replace(" ", "");
+			String drawDate = el2.text().replace("(","").replace(")","").replace("ë…„", "").replace("ì›”", "").replace("ì¼", "").replace("ì¶”ì²¨", "").replace(" ", "");
 			
 			Elements ele = doc.select("table");
 			Elements ele2 = ele.select("tbody");
 			Elements ele3 = ele2.select("tr");
 			DataVO dataVO = new DataVO();
-			String drawRound= strong.text().replace(" ", "").replace("È¸", "").replace("´çÃ·°á°ú","");
+			String drawRound= strong.text().replace(" ", "").replace("íšŒ", "").replace("ë‹¹ì²¨ê²°ê³¼","");
 			//System.out.println(drawRound);
 			//Long winnerAmountData;
 			for(int i=0; i<5; i++) {
